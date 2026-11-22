@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hotely5d.dao.StatsMapper">
+
+    <select id="selectCheckInTrend" resultType="java.util.HashMap">
+        SELECT
+            DATE(o.start_time) AS statDate,
+            COUNT(*) AS checkInCount
+        FROM orders o
+        WHERE DATE(o.start_time) >= DATE_SUB(CURDATE(), INTERVAL #{days} - 1 DAY)
+          AND DATE(o.start_time) &lt;= CURDATE()
+          AND o.status IN (1, 2, 3)
+        GROUP BY DATE(o.start_time)
+        ORDER BY statDate
+    </select>
+
+    <select id="selectCategoryOccupancy" resultType="java.util.HashMap">
+        SELECT
+            c.id AS categoryId,
+            c.category_name AS categoryName,
+            COUNT(r.id) AS totalRooms,
+            SUM(CASE WHEN o.id IS NOT NULL THEN 1 ELSE 0 END) AS occupiedRooms
+        FROM category c
+        JOIN room r ON r.category_id = c.id AND r.status = 1
+        LEFT JOIN orders o
+            ON o.room_id = r.id
+           AND o.status IN (1, 2)
+           AND CURDATE() >= DATE(o.start_time)
+           AND CURDATE() &lt; DATE(o.start_time) + INTERVAL o.days DAY
+        GROUP BY c.id, c.category_name
+        ORDER BY occupiedRooms DESC
+    </select>
+
+    <select id="selectRevenueTrend" resultType="java.util.HashMap">
+        SELECT
+            DATE_FORMAT(o.start_time, '%Y-%m') AS statMonth,
+            IFNULL(SUM(o.money), 0) AS revenue
+        FROM orders o
+        WHERE o.start_time >= DATE_SUB(CURDATE(), INTERVAL #{months} - 1 MONTH)
+          AND o.status IN (1, 2, 3)
+        GROUP BY DATE_FORMAT(o.start_time, '%Y-%m')
+        ORDER BY statMonth
+    </select>
+
+    <select id="selectOverview" resultType="java.util.HashMap">
+        SELECT
+            (SELECT COUNT(*) FROM room WHERE status = 1) AS totalRooms,
+            (SELECT COUNT(*) FROM member) AS totalMembers,
+            (SELECT COUNT(*) FROM orders WHERE status IN (1, 2)) AS activeOrders,
+            (SELECT COUNT(*) FROM appointment WHERE status = 1) AS pendingAppointments,
+            (SELECT IFNULL(SUM(money), 0) FROM orders
+             WHERE status IN (1, 2, 3)
+               AND DATE_FORMAT(start_time, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')) AS monthRevenue
+    </select>
+
+    <select id="selectCategorySales" resultType="java.util.HashMap">
+        SELECT
+            c.id AS categoryId,
+            c.category_name AS categoryName,
+            c.price AS price,
+            COUNT(o.id) AS orderCount,
+            IFNULL(SUM(o.money), 0) AS totalRevenue
+        FROM category c
+        LEFT JOIN room r ON r.category_id = c.id AND r.status = 1
+        LEFT JOIN orders o
+            ON o.room_id = r.id
+           AND o.status IN (1, 2, 3)
+           AND DATE(o.start_time) >= DATE_SUB(CURDATE(), INTERVAL #{days} - 1 DAY)
+        GROUP BY c.id, c.category_name, c.price
+        ORDER BY orderCount DESC
+    </select>
+
+    <select id="selectDailyOccupancyRate" resultType="java.util.HashMap">
+        SELECT
+            d.statDate,
+            IFNULL(occ.occupiedRooms, 0) AS occupiedRooms,
+            (SELECT COUNT(*) FROM room WHERE status = 1) AS totalRooms
+        FROM (
+            SELECT DATE_SUB(CURDATE(), INTERVAL seq DAY) AS statDate
+            FROM (
+                SELECT 0 AS seq UNION SELECT 1 UNION SELECT 2 UNION SELECT 3
+                UNION SELECT 4 UNION SELECT 5 UNION SELECT 6
+            ) AS days
+        ) d
+        LEFT JOIN (
+            SELECT
+                DATE(o.start_time) AS statDate,
+                COUNT(DISTINCT o.room_id) AS occupiedRooms
+            FROM orders o
+            WHERE o.status IN (1, 2)
+              AND DATE(o.start_time) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+              AND DATE(o.start_time) &lt;= CURDATE()
+            GROUP BY DATE(o.start_time)
+        ) occ ON d.statDate = occ.statDate
+        ORDER BY d.statDate
+    </select>
+
+    <select id="selectPublicCategoryInfo" resultType="java.util.HashMap">
+        SELECT
+            c.id AS categoryId,
+            c.category_name AS categoryName,
+            c.price AS price,
+            c.live_num AS liveNum,
+            c.photo AS photo,
+            c.introduce AS introduce,
+            COUNT(r.id) AS totalRooms,
+            SUM(CASE WHEN o.id IS NOT NULL THEN 1 ELSE 0 END) AS occupiedRooms
+        FROM category c
+        JOIN room r ON r.category_id = c.id AND r.status = 1
+        LEFT JOIN orders o
+            ON o.room_id = r.id
+           AND o.status IN (1, 2)
+           AND CURDATE() >= DATE(o.start_time)
+           AND CURDATE() &lt; DATE(o.start_time) + INTERVAL o.days DAY
+        GROUP BY c.id, c.category_name, c.price, c.live_num, c.photo, c.introduce
+        ORDER BY c.price ASC
+    </select>
+
+    <select id="selectAvailableRoomCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM room r
+        WHERE r.status = 1
+          AND r.id NOT IN (
+              SELECT o.room_id FROM orders o
+              WHERE o.status IN (1, 2)
+                AND CURDATE() >= DATE(o.start_time)
+                AND CURDATE() &lt; DATE(o.start_time) + INTERVAL o.days DAY
+          )
+    </select>
+
+</mapper>

@@ -1,0 +1,230 @@
+/* ========== 斌安居 · 全局设计系统 ========== */
+:root {
+  --hotel-dark: #141820;
+  --hotel-dark-2: #1c2333;
+  --hotel-dark-3: #252d3d;
+  --hotel-gold: #c9a962;
+  --hotel-gold-light: #e2cc8a;
+  --hotel-gold-dim: rgba(201, 169, 98, 0.15);
+  --hotel-text: #2c3e50;
+  --hotel-text-muted: #8b95a5;
+  --hotel-bg: #f0f2f5;
+  --hotel-card-bg: #ffffff;
+  --hotel-radius: 12px;
+  --hotel-radius-sm: 8px;
+  --hotel-shadow: 0 2px 12px rgba(20, 24, 32, 0.06);
+  --hotel-shadow-lg: 0 8px 32px rgba(20, 24, 32, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  color: var(--hotel-text);
+  background: var(--hotel-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--hotel-gold);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #a88b4a;
+}
+
+/* ========== Element UI 主题覆盖 ========== */
+.el-button--primary {
+  background: linear-gradient(135deg, #c9a962 0%, #a88b4a 100%) !important;
+  border-color: #b8954a !important;
+  box-shadow: 0 2px 8px rgba(201, 169, 98, 0.35);
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: linear-gradient(135deg, #d4b872 0%, #b8954a 100%) !important;
+  border-color: #c9a962 !important;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: #c9a962 !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: #c9a962 !important;
+  background: #c9a962 !important;
+}
+
+.el-radio__input.is-checked + .el-radio__label {
+  color: #a88b4a !important;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner,
+.el-switch.is-checked .el-switch__core {
+  border-color: #c9a962 !important;
+  background-color: #c9a962 !important;
+}
+
+.el-input__inner:focus,
+.el-textarea__inner:focus {
+  border-color: #c9a962 !important;
+}
+
+.el-select .el-input.is-focus .el-input__inner {
+  border-color: #c9a962 !important;
+}
+
+.el-date-editor.active .el-input__inner {
+  border-color: #c9a962 !important;
+}
+
+.el-tabs__item.is-active {
+  color: #c9a962 !important;
+}
+
+.el-tabs__active-bar {
+  background-color: #c9a962 !important;
+}
+
+.el-link.el-link--primary {
+  color: #c9a962 !important;
+}
+
+/* ========== 管理后台 · 通用页面 ========== */
+.app-container {
+  min-height: calc(100vh - 120px);
+}
+
+.app-container .box-table {
+  border: none !important;
+  border-radius: var(--hotel-radius) !important;
+  box-shadow: var(--hotel-shadow) !important;
+}
+
+.app-container .box-table .el-card__body {
+  padding: 24px !important;
+}
+
+.app-container .demo-form-inline {
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.app-container .el-table {
+  border-radius: var(--hotel-radius-sm);
+  overflow: hidden;
+}
+
+.app-container .el-table th {
+  background: #f8f9fb !important;
+  color: var(--hotel-text) !important;
+  font-weight: 600 !important;
+}
+
+.app-container .page-box {
+  margin-top: 20px;
+  text-align: right;
+}
+
+/* ========== 用户端 · 通用页面（通过 FrontLayout 包裹生效） ========== */
+.front-main .page-container {
+  width: 1200px;
+  max-width: calc(100% - 48px);
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.front-main .section {
+  margin-bottom: 32px;
+}
+
+.front-main .section-title {
+  position: relative;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--hotel-dark);
+  padding: 14px 0 14px 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e8eaef;
+  letter-spacing: 0.5px;
+}
+
+.front-main .section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(180deg, var(--hotel-gold), #a88b4a);
+  border-radius: 2px;
+}
+
+.front-main .section-item {
+  border: 1px solid #ebeef3 !important;
+  border-radius: var(--hotel-radius) !important;
+  background: #fff !important;
+  box-shadow: var(--hotel-shadow) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.front-main .section-item:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--hotel-shadow-lg) !important;
+  border-color: rgba(201, 169, 98, 0.3) !important;
+}
+
+.front-main .hotel-price {
+  color: #c0392b !important;
+  font-weight: 700 !important;
+}
+
+.front-main .el-table {
+  border-radius: var(--hotel-radius-sm);
+  overflow: hidden;
+  box-shadow: var(--hotel-shadow);
+}
+
+.front-main .el-card {
+  border: none;
+  border-radius: var(--hotel-radius);
+  box-shadow: var(--hotel-shadow);
+}
+
+/* ========== 弹窗 ========== */
+.el-dialog {
+  border-radius: var(--hotel-radius) !important;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  background: #f8f9fb;
+  padding: 16px 20px !important;
+}
+
+.el-dialog__title {
+  font-weight: 600;
+  color: var(--hotel-dark);
+}
+
+/* ========== 滚动条 ========== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
